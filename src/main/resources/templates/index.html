@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Learning App</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header class="header">
+    <div class="container">
+        <div class="header-inner">
+            <div class="logo">
+                <span class="logo-icon">☕</span>
+                <div>
+                    <h1>Java Web App</h1>
+                    <p>Spring Boot · Docker · AWS EC2</p>
+                </div>
+            </div>
+            <div class="header-badge">Running in Docker 🐳</div>
+        </div>
+    </div>
+</header>
+
+<main class="container">
+
+    <!-- Flash message -->
+    <div th:if="${successMsg}" class="alert">
+        <span>✓</span> <span th:text="${successMsg}"></span>
+    </div>
+
+    <!-- Stats row -->
+    <div class="stats-row">
+        <div class="stat-card stat-total">
+            <span class="stat-num" th:text="${totalCount}">0</span>
+            <span class="stat-label">Total Tasks</span>
+        </div>
+        <div class="stat-card stat-pending">
+            <span class="stat-num" th:text="${pendingCount}">0</span>
+            <span class="stat-label">Pending</span>
+        </div>
+        <div class="stat-card stat-done">
+            <span class="stat-num" th:text="${completedCount}">0</span>
+            <span class="stat-label">Completed</span>
+        </div>
+    </div>
+
+    <div class="layout">
+
+        <!-- Add Task Form -->
+        <div class="card form-card">
+            <h2 class="card-title">Add New Task</h2>
+            <form th:action="@{/tasks/add}" method="post">
+                <div class="form-group">
+                    <label for="title">Task Title *</label>
+                    <input type="text" id="title" name="title"
+                           placeholder="e.g. Deploy to AWS EC2" required maxlength="80">
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" rows="3"
+                              placeholder="Optional details..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="priority">Priority</label>
+                    <select id="priority" name="priority">
+                        <option value="LOW">🟢 Low</option>
+                        <option value="MEDIUM" selected>🟡 Medium</option>
+                        <option value="HIGH">🔴 High</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">+ Add Task</button>
+            </form>
+        </div>
+
+        <!-- Task List -->
+        <div class="task-list-panel">
+            <h2 class="card-title">Tasks
+                <span class="count-badge" th:text="${tasks.size()}"></span>
+            </h2>
+
+            <div th:if="${tasks.empty}" class="empty-state">
+                <p>🎉 No tasks yet. Add one!</p>
+            </div>
+
+            <div class="task-list">
+                <div th:each="task : ${tasks}"
+                     th:classappend="${task.completed} ? 'task-item done' : 'task-item'"
+                     class="task-item">
+
+                    <div class="task-main">
+                        <div class="task-header">
+                            <span th:text="${task.title}" class="task-title"></span>
+                            <span th:text="${task.priority}"
+                                  th:classappend="${task.priority == 'HIGH'} ? 'badge badge-high' : (${task.priority == 'MEDIUM'} ? 'badge badge-med' : 'badge badge-low')"
+                                  class="badge"></span>
+                        </div>
+                        <p th:if="${!task.description.isBlank()}"
+                           th:text="${task.description}" class="task-desc"></p>
+                        <span class="task-date" th:text="${task.createdAt}"></span>
+                    </div>
+
+                    <div class="task-actions">
+                        <form th:action="@{/tasks/{id}/toggle(id=${task.id})}" method="post">
+                            <button type="submit" class="btn btn-sm"
+                                    th:text="${task.completed} ? 'Undo' : '✓ Done'">
+                            </button>
+                        </form>
+                        <form th:action="@{/tasks/{id}/delete(id=${task.id})}" method="post">
+                            <button type="submit" class="btn btn-sm btn-danger"
+                                    onclick="return confirm('Delete this task?')">🗑</button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- API info box -->
+    <div class="info-box">
+        <strong>🔌 Bonus:</strong> This app also has a REST endpoint at
+        <a href="/api/stats" target="_blank"><code>/api/stats</code></a>
+        — returns task counts as JSON. Great for learning REST APIs!
+    </div>
+
+</main>
+
+<footer class="footer">
+    <div class="container">
+        Built with ☕ Spring Boot · Packaged with 🐳 Docker · Deployed on ☁️ AWS EC2
+    </div>
+</footer>
+
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>
