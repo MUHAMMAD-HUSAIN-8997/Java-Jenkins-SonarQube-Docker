@@ -21,7 +21,7 @@ FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
 # Copy only the built JAR from Stage 1
-COPY --from=build /app/target/java-webapp-1.0.0.jar app.jar
+COPY --from=build /app/target/*.jar app.jar
 
 # Expose port 8080 (Spring Boot default)
 EXPOSE 8080
