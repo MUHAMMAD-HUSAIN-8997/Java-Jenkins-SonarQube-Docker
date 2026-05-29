@@ -53,7 +53,7 @@ pipeline {
                 sshagent(['docker-server-ssh']) {
 
                     sh '''
-                    ssh -o StrictHostKeyChecking=no ubuntu@54.90.90.91 "
+                    ssh -o StrictHostKeyChecking=no ubuntu@3.88.182.152 "
 
                     set -e
 
